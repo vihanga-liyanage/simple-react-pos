@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS react-pos;
-CREATE DATABASE react-pos;
-USE react-pos;
+DROP DATABASE IF EXISTS react_pos;
+CREATE DATABASE react_pos;
+USE react_pos;
 
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,

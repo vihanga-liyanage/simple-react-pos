@@ -1,49 +1,45 @@
 // server.js
 const express = require('express');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
 const app = express();
 const port = 3001; // Choose any port you prefer
 
 app.use(express.json())
 
-// MySQL connection configuration
-const connection = mysql.createConnection({
-  host: 'localhost', // Change this to your MySQL host if it's not running locally
-  user: 'root', // Change this to your MySQL username
-  password: 'Admin@123', // Change this to your MySQL password
-  database: 'react_pos' // Change this to your database name
-});
-
-// Connect to MySQL
-connection.connect((err) => {
-  if (err) {
-    console.error('Error connecting to MySQL:', err);
-    return;
-  }
-  console.log('Connected to MySQL');
+const pool = mysql.createPool({
+  host: 'localhost', // Your MySQL host
+  user: 'root', // Your MySQL user
+  password: 'Admin@123', // Your MySQL password
+  database: 'react_pos', // Your MySQL database
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });
 
 // Add products router
-const productRouter = require('./routers/products')(connection);
+const productRouter = require('./routers/products')(pool);
 app.use('/api/products', productRouter);
 
 // Add orders router
-const orderRouter = require('./routers/orders')(connection);
+const orderRouter = require('./routers/orders')(pool);
 app.use('/api/orders', orderRouter);
 
+// Add summary router
+const summaryRouter = require('./routers/summary')(pool);
+app.use('/api/summary', summaryRouter);
+
 // Special route to get the last order ID
-app.get('/api/last-order-id', (req, res) => {
+app.get('/api/last-order-id', async (req, res) => {
   const sql = 'SELECT MAX(id) AS last_order_id FROM orders';
-  connection.query(sql, (err, result) => {
-    if (err) {
-      console.error('Error fetching last order ID:', err);
-      res.status(500).send('Error fetching last order ID');
-      return;
-    }
-    const lastOrderId = result[0].last_order_id || 0;
+  try {
+    const [results] = await pool.query(sql);
+    const lastOrderId = results[0].last_order_id || 0;
     res.json({ order_id: lastOrderId });
-  });
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    res.status(500).send('Error fetching order');
+  }
 });
 
 app.listen(port, () => {

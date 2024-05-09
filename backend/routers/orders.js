@@ -1,73 +1,112 @@
 const express = require('express');
 const { printReceipt } = require('../utils/printer'); // Import the utility function
 
-module.exports = (connection) => {
+module.exports = (pool) => {
   const router = express.Router();
 
-  // Route to create a new order
-  router.post('/', (req, res) => {
+  router.post('/', async (req, res) => {
     const { customer_name, total_price, payment_method, timestamp, products } = req.body;
-
-    // Start a transaction
-    connection.beginTransaction((err) => {
-      if (err) {
-        console.error('Error starting transaction:', err);
-        res.status(500).send('Error starting transaction');
-        return;
-      }
-
-      // Insert order details into the orders table
-      connection.query(
+  
+    let connection;
+  
+    try {
+      // Get a connection from the pool
+      connection = await pool.getConnection();
+  
+      // Start a transaction
+      await connection.beginTransaction();
+  
+      // Insert into the orders table
+      const [orderResult] = await connection.query(
         'INSERT INTO orders (customer_name, total_price, payment_method, timestamp) VALUES (?, ?, ?, ?)',
-        [customer_name, total_price, payment_method, timestamp],
-        (err, orderResult) => {
-          if (err) {
-            console.error('Error inserting order:', err);
-            connection.rollback(() => {
-              res.status(500).send('Error inserting order');
-            });
-            return;
-          }
-          const orderId = orderResult.insertId;
-
-          // Insert product details into the order_products table
-          const values = products.map(product => [orderId, product.id, product.quantity]);
-          connection.query(
-            'INSERT INTO order_products (order_id, product_id, quantity) VALUES ?',
-            [values],
-            (err) => {
-              if (err) {
-                console.error('Error inserting order products:', err);
-                connection.rollback(() => {
-                  res.status(500).send('Error inserting order products');
-                });
-                return;
-              }
-
-              // Commit the transaction
-              connection.commit((err) => {
-                if (err) {
-                  console.error('Error committing transaction:', err);
-                  connection.rollback(() => {
-                    res.status(500).send('Error committing transaction');
-                  });
-                  return;
-                }
-
-                // Print the receipt
-                printReceipt(total_price);
-
-                res.status(201).json({ message: 'Order created successfully' });
-              });
-            }
-          );
-        }
+        [customer_name, total_price, payment_method, timestamp]
       );
-    });
+  
+      const orderId = orderResult.insertId;
+  
+      // Prepare values for the order_products table
+      const values = products.map((product) => [orderId, product.id, product.quantity]);
+  
+      // Insert into the order_products table
+      await connection.query(
+        'INSERT INTO order_products (order_id, product_id, quantity) VALUES ?',
+        [values]
+      );
+  
+      // Commit the transaction
+      await connection.commit();
+  
+      // Print the receipt
+      createReceipt(req.body).then(receipt => {
+        printReceipt(receipt);
+        res.status(201).json({ message: 'Order created successfully' });
+      });
+  
+    } catch (error) {
+      console.error('Transaction error:', error);
+  
+      if (connection) {
+        // Rollback the transaction on error
+        await connection.rollback();
+        connection.release();
+      }
+  
+      res.status(500).json({ message: 'Error creating order' });
+    } finally {
+      if (connection) {
+        // Release the connection back to the pool
+        connection.release();
+      }
+    }
   });
 
+  const createReceipt = async(content) => {
+
+    const { id, customer_name, total_price, payment_method, timestamp, products } = content;
+  
+    const productInfo = []
+    for (const p of products) {
+      const product = await getProductById(p.id); // Retrieve the product name
+      productInfo.push({
+        name: product.name,
+        price: product.price,
+        qty: p.quantity
+      });
+    }
+    const receipt = {
+      title: "Austin Buddhist Vihara\n\nFood Bazar 2024\n\n",
+      orderNumber: id,
+      customer_name: customer_name,
+      total_price: total_price,
+      payment_method: payment_method,
+      timestamp: timestamp,
+      productInfo: productInfo
+    };
+  
+    return receipt;
+  }
+  
+  const getProductById = async (productId) => {
+  
+    if (typeof productId !== 'number') {
+      throw new Error('Invalid product ID');
+    }
+  
+    const query = `SELECT name, price FROM products WHERE id = ?`;
+    
+    try {
+      const [rows] = await pool.query(query, [productId]); // Parameterized query
+      if (rows.length === 0) {
+        throw new Error(`Product with ID ${productId} not found`);
+      }
+      return rows[0]; // Return the first (and only) result
+    } catch (error) {
+      throw new Error(`Error fetching product info: ${error.message}`);
+    }
+  };
+
   // GET all orders with product details including quantity, sorted by order number
-  router.get('/', (req, res) => {
+  router.get('/', async (req, res) => {
     const sql = `
       SELECT orders.id, orders.customer_name, orders.total_price, orders.timestamp, 
             GROUP_CONCAT(products.name SEPARATOR ', ') AS products,
@@ -79,61 +118,79 @@ module.exports = (connection) => {
       ORDER BY orders.id DESC
     `;
     
-    connection.query(sql, (err, results) => {
-      if (err) {
-        console.error('Error fetching orders:', err);
-        res.status(500).send('Error fetching orders');
-        return;
-      }
-      res.json(results);
-    });
+    try {
+      const [results] = await pool.query(sql); // Execute the query using the connection pool
+      res.json(results); // Send the results as a JSON response
+    } catch (error) {
+      console.error('Error fetching orders:', error); // Log the error
+      res.status(500).send('Error fetching orders'); // Send a 500 status with an error message
+    }
+
   });
 
   // Route to get order by ID
-  router.get('/:id', (req, res) => {
+  router.get('/:id', async (req, res) => {
     const { id } = req.params;
     const sql = 'SELECT * FROM orders WHERE id = ?';
-    connection.query(sql, [id], (err, results) => {
-      if (err) {
-        console.error('Error fetching order:', err);
-        res.status(500).send('Error fetching order');
-        return;
-      }
+
+    try {
+      const [results] = await pool.query(fetchOrderByIdQuery, [id]);
+  
       if (results.length === 0) {
         res.status(404).send('Order not found');
         return;
       }
+  
       res.json(results[0]);
-    });
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      res.status(500).send('Error fetching order');
+    }
   });
 
   // Route to update order by ID
-  router.put('/:id', (req, res) => {
+  router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { customer_name, total_price, payment_method, timestamp } = req.body;
     const sql = 'UPDATE orders SET customer_name = ?, total_price = ?, payment_method = ?, timestamp = ? WHERE id = ?';
-    connection.query(sql, [customer_name, total_price, payment_method, timestamp, id], (err, result) => {
-      if (err) {
-        console.error('Error updating order:', err);
-        res.status(500).send('Error updating order');
-        return;
+
+    try {
+      const [result] = await pool.query(sql, [
+        customer_name,
+        total_price,
+        payment_method,
+        timestamp,
+        id,
+      ]);
+  
+      if (result.affectedRows === 0) {
+        res.status(404).send('Order not found');
+      } else {
+        res.json({ message: 'Order updated successfully' });
       }
-      res.json({ message: 'Order updated successfully' });
-    });
+    } catch (error) {
+      console.error('Error updating order:', error);
+      res.status(500).send('Error updating order');
+    }
   });
 
   // Route to delete order by ID
-  router.delete('/:id', (req, res) => {
+  router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     const sql = 'DELETE FROM orders WHERE id = ?';
-    connection.query(sql, [id], (err, result) => {
-      if (err) {
-        console.error('Error deleting order:', err);
-        res.status(500).send('Error deleting order');
+    try {
+      const [result] = await pool.query(deleteOrderQuery, [id]);
+  
+      if (result.affectedRows === 0) {
+        res.status(404).send('Order not found');
         return;
       }
+  
       res.json({ message: 'Order deleted successfully' });
-    });
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      res.status(500).send('Error deleting order');
+    }
   });
 
   return router;

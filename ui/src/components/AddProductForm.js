@@ -1,71 +1,90 @@
-// AddProductForm.js
+import React, { useEffect, useState } from 'react';
 
-import React, { useState } from 'react';
-import './Products.css'; 
+const AddProductForm = ({ initialProduct, onSubmit, mode = 'add' }) => {
+  const [product, setProduct] = useState({
+    name: '',
+    price: '',
+    imageUrl: '',
+    available: true,
+  });
 
-function AddProductForm({ onAdd }) {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [image_url, setImageUrl] = useState('');
-  const [available, setAvailable] = useState(true); // Default available to true
-  const [error, setError] = useState('');
+  useEffect(() => {
+    if (initialProduct) {
+      setProduct(initialProduct); // Pre-fill form if editing
+    }
+  }, [initialProduct]);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !price) {
-      setError('Please fill out all required fields.');
-      return;
-    }
-    const newProduct = {
-      name: name,
-      price: parseFloat(price),
-      image_url: image_url || null, // Set image_url to null if not provided
-      available: available
-    };
-    onAdd(newProduct);
-    setName('');
-    setPrice('');
-    setImageUrl('');
-    setAvailable(true); // Reset available to true
-    setError('');
+    onSubmit(product);
+    setProduct({
+      name: '',
+      price: '',
+      imageUrl: '',
+      available: true,
+    });
   };
 
   return (
-    <form className="form-container" onSubmit={handleSubmit}>
-      <label className="form-label">Name:</label>
-      <input
-        className="form-input"
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <label className="form-label">Price:</label>
-      <input
-        className="form-input"
-        type="number"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-      />
-      <label className="form-label">Image URL (Optional):</label>
-      <input
-        className="form-input"
-        type="text"
-        value={image_url}
-        onChange={(e) => setImageUrl(e.target.value)}
-      />
-      <label className="form-label">Availability:</label>
-      <select
-        className="form-input"
-        value={available}
-        onChange={(e) => setAvailable(e.target.value === 'true')}
-      >
-        <option value={true}>Available</option>
-        <option value={false}>Unavailable</option>
-      </select>
-      {error && <p className="error-message">{error}</p>}
-      <button className="form-button" type="submit">Add Product</button>
+    <form className="add-product-form" onSubmit={handleSubmit}>
+      <div className="form-row"> {/* Label and input on the same line */}
+        <label htmlFor="name">Product Name:</label>
+        <input
+          type="text"
+          name="name"
+          value={product.name}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      <div className="form-row"> {/* Label and input on the same line */}
+        <label htmlFor="price">Price:</label>
+        <input
+          type="number"
+          name="price"
+          value={product.price}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      <div className="form-row"> {/* Label and input on the same line */}
+        <label htmlFor="imageUrl">Image URL:</label>
+        <input
+          type="text"
+          name="imageUrl"
+          value={product.imageUrl}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="form-row"> {/* Label and checkbox on the same line */}
+        <label htmlFor="available">Available:</label>
+        <input
+          type="checkbox"
+          name="available"
+          checked={product.available}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="button-row">
+        <button type="submit">
+          {mode === 'edit' ? 'Update Product' : 'Add Product'}
+        </button>
+      </div>
+      
     </form>
   );
-}
+};
 
 export default AddProductForm;

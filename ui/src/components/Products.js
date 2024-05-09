@@ -1,9 +1,7 @@
 // Products.js
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import AddProductForm from './AddProductForm';
-import EditProductForm from './EditProductForm';
 import './Products.css'; // Import CSS file
 
 function Products() {
@@ -89,6 +87,18 @@ function Products() {
   return (
     <div className="container">
       <h2 className="header">Product Management</h2>
+      {editingProduct ? (
+        <div>
+          <h3>Edit Product</h3>
+          <AddProductForm initialProduct={editingProduct} onSubmit={updateProduct} mode="edit" />
+        </div>
+      ) : (
+        <div>
+          <h3>Add New Product</h3>
+          <AddProductForm onSubmit={addProduct} />
+        </div>
+      )}
+      <h3>Products List</h3>
       <table className="table">
         <thead>
           <tr>
@@ -114,18 +124,6 @@ function Products() {
           ))}
         </tbody>
       </table>
-      {editingProduct ? (
-        <div>
-          <h3>Edit Product</h3>
-          <EditProductForm product={editingProduct} onUpdate={updateProduct} onCancel={handleCancelEdit} />
-        </div>
-      ) : (
-        <div>
-          <h3>Add New Product</h3>
-          <AddProductForm onAdd={addProduct} />
-        </div>
-      )}
-      <Link to="/" className="link">Back to Order Interface</Link>
     </div>
   );
 }

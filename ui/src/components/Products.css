@@ -1,102 +1,124 @@
 /* Products.css */
 
-.container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-  }
-  
-  .header {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  .link {
-    display: inline-block;
-    margin-bottom: 20px;
-    text-decoration: none;
-    color: #333;
-    border: 1px solid #333;
-    padding: 5px 10px;
-    border-radius: 5px;
-  }
-  
-  .link:hover {
-    background-color: #333;
-    color: #fff;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .table th, .table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-  
-  .table th {
-    background-color: #f2f2f2;
-  }
-  
-  .actions {
-    display: flex;
-  }
-  
-  .actions button {
-    margin-right: 5px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 14px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .actions button:hover {
-    background-color: #45a049;
-  }
-  
-  /* Products.css */
+input {
+  font-family: monospace;
+}
 
-.form-container {
-    margin-bottom: 20px;
-  }
+button {
+  font-family: monospace;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.header {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.link {
+  display: inline-block;
+  margin-bottom: 20px;
+  text-decoration: none;
+  color: #333;
+  border: 1px solid #333;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.link:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  border: 1px solid #ddd;
+  padding: 5px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+.actions {
+  display: flex;
+}
+
+.actions button {
+  margin-right: 5px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background-color: #45a049;
+}
   
-  .form-label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .form-input {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .form-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .form-button:hover {
-    background-color: #45a049;
-  }
-  
-  .error-message {
-    color: red;
-    margin-top: 5px;
-  }
-  
+/* AddProductForm.css */
+
+/* Style for the entire form */
+.add-product-form {
+  max-width: 600px; /* Set a maximum width for the form */
+  padding: 20px; /* Padding inside the form */
+  border: 1px solid #ccc; /* Border around the form */
+  border-radius: 5px; /* Rounded corners */
+  background-color: #f9f9f9; /* Light background color */
+}
+
+/* Each form row has label and input on the same line */
+.form-row {
+  display: flex; /* Flexbox for horizontal alignment */
+  align-items: center; /* Center elements vertically */
+  justify-content: space-between; /* Separate label and input */
+  margin-bottom: 10px; /* Space between form rows */
+}
+
+/* Style for the labels */
+.form-row label {
+  flex-basis: 30%; /* Label takes 30% of the row */
+  text-align: right; /* Align the label text to the right */
+}
+
+/* Style for the inputs */
+.form-row input {
+  flex-basis: 70%; /* Input takes 70% of the row */
+  padding: 5px; /* Padding inside the input */
+  border: 1px solid #ccc; /* Border around the input */
+  border-radius: 3px; /* Slightly rounded corners */
+}
+
+.button-row {
+  display: flex; /* Use Flexbox to align the button */
+  justify-content: flex-end; /* Align the button to the right */
+}
+
+/* Style for the submit button */
+.add-product-form button {
+  padding: 10px 20px; /* Padding around the button */
+  background-color: #4CAF50; /* Green background */
+  color: white; /* White text */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Change cursor on hover */
+}
+
+.add-product-form button:hover {
+  background-color: #45a049; /* Darken the background on hover */
+}

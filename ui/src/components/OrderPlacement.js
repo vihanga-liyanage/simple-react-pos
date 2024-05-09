@@ -17,6 +17,11 @@ function OrderPlacement() {
     generateOrderNumber();
   }, []);
 
+  useEffect(() => {
+    const updatedTotalPrice = selectedProducts.reduce((total, prod) => total + prod.price * prod.quantity, 0);
+    setTotalPrice(updatedTotalPrice);
+  }, [selectedProducts]);
+
   const fetchProducts = async () => {
     try {
       const response = await fetch('/api/products');
@@ -45,6 +50,7 @@ function OrderPlacement() {
   };
 
   const handleProductClick = (clickedProduct) => {
+  
     if (!clickedProduct.available) return; // If product is unavailable, do nothing
     const productIndex = selectedProducts.findIndex(product => product.id === clickedProduct.id);
     if (productIndex !== -1) {
@@ -56,10 +62,8 @@ function OrderPlacement() {
       // Product doesn't exist in selectedProducts, add it with quantity 1
       const updatedProducts = [...selectedProducts, { ...clickedProduct, quantity: 1 }];
       setSelectedProducts(updatedProducts);
-    }
-
-    const updatedTotalPrice = selectedProducts.reduce((total, prod) => total + prod.price * prod.quantity, 0);
-    setTotalPrice(updatedTotalPrice);
+    }    
+    
   };
 
   const handleRemoveProduct = (productToRemove) => {

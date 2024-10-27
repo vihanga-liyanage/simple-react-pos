@@ -119,7 +119,15 @@ function Orders() {
                       </button>
                     );
                   })()}
-                  <FontAwesomeIcon icon={faTrash} onClick={() => deleteOrder(order.id)} style={{ cursor: 'pointer' }} />
+                  <FontAwesomeIcon 
+                    icon={faTrash} 
+                    onClick={() => {
+                      if (window.confirm("Are you sure you want to delete this order?")) {
+                        deleteOrder(order.id);
+                      }
+                    }} 
+                    style={{ cursor: 'pointer' }} 
+                  />
                 </td>
               </tr>
             ))}

@@ -34,10 +34,12 @@ async function printReceipt(content) {
           printer.raster(image);
           printer.newLine();
           printer.newLine();
+          printer.size(1, 1);
           printer.text(content.title);
 
           printer.align("RT");
           printer.text('Order number: ' + content.orderNumber);
+          printer.size(0, 0);
           printDoubleLine();
           printer.newLine();
 
@@ -65,7 +67,9 @@ async function printReceipt(content) {
           printer.newLine();
           printer.align("CT");
           printer.style("B");
+          printer.size(1, 1);
           printer.text('ORDER TOTAL: $' + content.total_price.toFixed(2));
+          printer.size(0, 0);
           printer.newLine();
 
           printer.style("NORMAL");
@@ -76,9 +80,13 @@ async function printReceipt(content) {
           printer.cut();
 
           // Printing internal receipt
-          printer.text('Order number: ' + content.orderNumber);
+          printer.size(3, 3);
+          printer.text(content.orderNumber);
+          printer.size(0, 0);
+          printer.newLine();
           printer.drawLine();
           printer.align("LT");
+          printer.size(1, 1);
           content.productInfo.forEach((product) => {
             printer.text(product.qty + ' * ' + product.name);
           });

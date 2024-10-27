@@ -15,7 +15,8 @@ CREATE TABLE orders (
     customer_name VARCHAR(255),
     total_price DECIMAL(10, 2),
     payment_method ENUM('card', 'cash'),
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    delivery_status TINYINT NOT NULL DEFAULT -1
 );
 
 CREATE TABLE order_products (
@@ -26,9 +27,3 @@ CREATE TABLE order_products (
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
-
--- ALTER TABLE order_products
--- ADD CONSTRAINT order_products_ibfk_1
--- FOREIGN KEY (order_id)
--- REFERENCES orders(id)
--- ON DELETE CASCADE;

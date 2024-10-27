@@ -15,11 +15,14 @@ const SummaryPage = () => {
     cardTotal: 0,
     cashTotal: 0,
     productSales: [],
+    pendingProductQuantities: [],
   });
 
   const fetchSummaryData = async (startDate, endDate) => {
     const response = await fetch(`/api/summary?start=${startDate.toISOString()}&end=${endDate.toISOString()}`);
     const data = await response.json();
+    // Sort product sales by product name
+    data.productSales.sort((a, b) => a.name.localeCompare(b.name));
     setSummaryData(data);
   };
 
@@ -64,6 +67,28 @@ const SummaryPage = () => {
           ))}
         </tbody>
       </table>
+
+      <h2>Pending Items</h2>
+      {summaryData.pendingProductQuantities.length > 0 ? (
+        <table className="pending-products-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Pending Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {summaryData.pendingProductQuantities.map((product) => (
+              <tr key={product.name}>
+                <td>{product.name}</td>
+                <td>{product.pendingQuantity}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>No pending items.</p>
+      )}
     </div>
   );
 };

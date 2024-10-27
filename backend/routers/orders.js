@@ -108,7 +108,7 @@ module.exports = (pool) => {
   // GET all orders with product details including quantity, sorted by order number
   router.get('/', async (req, res) => {
     const sql = `
-      SELECT orders.id, orders.customer_name, orders.total_price, orders.timestamp, 
+      SELECT orders.id, orders.customer_name, orders.total_price, orders.timestamp, orders.delivery_status, 
             GROUP_CONCAT(products.name SEPARATOR ', ') AS products,
             GROUP_CONCAT(order_products.quantity SEPARATOR ', ') AS quantities
       FROM orders
@@ -192,6 +192,27 @@ router.delete('/:id', async (req, res) => {
       res.status(500).send('Error deleting order');
   }
 });
+
+  // Route to update delivery status by ID
+  router.put('/:id/delivery-status', async (req, res) => {
+    const { id } = req.params;
+    const { delivered } = req.body; // 1 for delivered, 0 for ready, -1 for pending
+
+    const sql = 'UPDATE orders SET delivery_status = ? WHERE id = ?';
+
+    try {
+      const [result] = await pool.query(sql, [delivered, id]);
+
+      if (result.affectedRows === 0) {
+        res.status(404).send('Order not found');
+      } else {
+        res.json({ message: 'Delivery status updated successfully' });
+      }
+    } catch (error) {
+      console.error('Error updating delivery status:', error);
+      res.status(500).send('Error updating delivery status');
+    }
+  });
 
   return router;
 };

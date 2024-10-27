@@ -1,8 +1,11 @@
 /* Orders.css */
-.orders-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+
+  .orders-container {
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    overflow: auto;
   }
   
   .orders-header {
@@ -33,5 +36,30 @@
   
   .orders-table tr:hover {
     background-color: #ddd;
+  }
+  
+  .status-button {
+    margin: 0 5px;
+    padding: 5px;
+    cursor: pointer;
+    background-color: #ffeda4;
+  }
+  
+  .status {
+    padding: 5px;
+    border-radius: 4px;
+    color: white; /* Text color */
+  }
+  
+  .delivered {
+    background-color: green; /* Green for Delivered */
+  }
+  
+  .ready {
+    background-color: orange; /* Orange for Ready */
+  }
+  
+  .pending {
+    background-color: red; /* Red for Pending */
   }
   

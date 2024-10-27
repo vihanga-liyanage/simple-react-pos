@@ -1,7 +1,7 @@
-// Orders.js
-
 import React, { useState, useEffect } from 'react';
-import './Orders.css'; // Import CSS file
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import './Orders.css';
 
 function Orders() {
   const [orders, setOrders] = useState([]);
@@ -37,13 +37,51 @@ function Orders() {
     }
   };
 
+  // Get status button
+  const getNextStatus = (status) => {
+    switch (status) {
+      case -1:
+        return { label: 'Mark Ready', nextStatus: 0 };
+      case 0:
+        return { label: 'Mark Delivered', nextStatus: 1 };
+      case 1:
+        return { label: 'Mark Pending', nextStatus: -1 };
+      default:
+        return null;
+    }
+  };
+
+  // Toggle delivery status function
+  const toggleDeliveryStatus = async (orderId, status) => {
+    console.log(status);
+    try {
+      const response = await fetch(`/api/orders/${orderId}/delivery-status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ delivered: status}),
+      });
+
+      if (response.ok) {
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order.id === orderId ? { ...order, delivery_status: status} : order
+          )
+        );
+      } else {
+        console.error('Failed to update delivery status');
+      }
+    } catch (error) {
+      console.error('Error updating delivery status:', error);
+    }
+  };
+
   return (
-    <div className="orders-container"> {/* Apply container class */}
-      <h2 className="orders-header">Orders</h2> {/* Apply header class */}
+    <div className="orders-container">
+      <h2 className="orders-header">Orders</h2>
       {orders.length === 0 ? (
         <p>No orders found</p>
       ) : (
-        <table className="orders-table"> {/* Apply table class */}
+        <table className="orders-table">
           <thead>
             <tr>
               <th>Order Number</th>
@@ -51,7 +89,8 @@ function Orders() {
               <th>Total Price</th>
               <th>Timestamp</th>
               <th>Products</th>
-              <th>Action</th> {/* Add new Action header */}
+              <th>Delivery Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -68,8 +107,19 @@ function Orders() {
                     ))}
                   </ul>
                 </td>
+                <td className={`status ${order.delivery_status === 1 ? 'delivered' : order.delivery_status === 0 ? 'ready' : 'pending'}`}>
+                  {order.delivery_status === 1 ? 'Delivered' : order.delivery_status === 0 ? 'Ready' : 'Pending'}
+                </td>
                 <td>
-                  <button onClick={() => deleteOrder(order.id)} className="delete-button">🗑️</button> {/* Delete button */}
+                  {(() => {
+                    const { label, nextStatus } = getNextStatus(order.delivery_status);
+                    return (
+                      <button onClick={() => toggleDeliveryStatus(order.id, nextStatus)} className={`status-button`}>
+                        {label}
+                      </button>
+                    );
+                  })()}
+                  <FontAwesomeIcon icon={faTrash} onClick={() => deleteOrder(order.id)} style={{ cursor: 'pointer' }} />
                 </td>
               </tr>
             ))}

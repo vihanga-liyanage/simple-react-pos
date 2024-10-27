@@ -38,13 +38,25 @@ module.exports = (pool) => {
          GROUP BY products.name`,
         [start, end]
       );
-  
+      
+      // Pending items query based on delivery status
+      const [pendingProductQuantities] = await pool.query(
+        `SELECT p.name, SUM(op.quantity) AS pendingQuantity
+         FROM order_products op
+         JOIN products p ON op.product_id = p.id
+         JOIN orders o ON op.order_id = o.id
+         WHERE o.delivery_status = -1 AND o.timestamp BETWEEN ? AND ?
+         GROUP BY p.name`,
+        [start, end]
+      );
+
       res.json({
         orderCount: orderCount[0].count,
         salesTotal: salesTotal[0].total,
         cardTotal: cardTotal[0].total,
         cashTotal: cashTotal[0].total,
         productSales,
+        pendingProductQuantities,
       });
     } catch (error) {
       console.error('Error fetching summary:', error);

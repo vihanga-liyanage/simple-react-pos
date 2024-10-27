@@ -175,23 +175,23 @@ module.exports = (pool) => {
   });
 
   // Route to delete order by ID
-  router.delete('/:id', async (req, res) => {
-    const { id } = req.params;
-    const sql = 'DELETE FROM orders WHERE id = ?';
-    try {
-      const [result] = await pool.query(deleteOrderQuery, [id]);
-  
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  const sql = 'DELETE FROM orders WHERE id = ?';
+  try {
+      const [result] = await pool.query(sql, [id]);
+
       if (result.affectedRows === 0) {
-        res.status(404).send('Order not found');
-        return;
+          res.status(404).send('Order not found');
+          return;
       }
-  
+
       res.json({ message: 'Order deleted successfully' });
-    } catch (error) {
+  } catch (error) {
       console.error('Error deleting order:', error);
       res.status(500).send('Error deleting order');
-    }
-  });
+  }
+});
 
   return router;
 };

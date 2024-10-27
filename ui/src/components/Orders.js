@@ -20,6 +20,23 @@ function Orders() {
     }
   };
 
+  // Delete order function
+  const deleteOrder = async (orderId) => {
+    try {
+      const response = await fetch(`/api/orders/${orderId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
+      } else {
+        console.error('Failed to delete order');
+      }
+    } catch (error) {
+      console.error('Error deleting order:', error);
+    }
+  };
+
   return (
     <div className="orders-container"> {/* Apply container class */}
       <h2 className="orders-header">Orders</h2> {/* Apply header class */}
@@ -34,10 +51,11 @@ function Orders() {
               <th>Total Price</th>
               <th>Timestamp</th>
               <th>Products</th>
+              <th>Action</th> {/* Add new Action header */}
             </tr>
           </thead>
           <tbody>
-            {orders.map((order, index) => (
+            {orders.map((order) => (
               <tr key={order.id}>
                 <td>{order.id}</td>
                 <td>{order.customer_name}</td>
@@ -49,6 +67,9 @@ function Orders() {
                       <li key={idx}>{productName} -&gt; {order.quantities.split(',')[idx]}</li>
                     ))}
                   </ul>
+                </td>
+                <td>
+                  <button onClick={() => deleteOrder(order.id)} className="delete-button">🗑️</button> {/* Delete button */}
                 </td>
               </tr>
             ))}

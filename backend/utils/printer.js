@@ -53,7 +53,7 @@ async function printReceipt(content) {
           
           printer.drawLine();
           printer.align("RT");
-          printer.text('TOTAL :       ' + content.total_price.toFixed(2) + '  ');
+          printer.text('TOTAL :       $' + content.total_price.toFixed(2) + '  ');
           printer.drawLine();
 
           printer.align("LT");
@@ -65,7 +65,7 @@ async function printReceipt(content) {
           printer.newLine();
           printer.align("CT");
           printer.style("B");
-          printer.text('ORDER TOTAL: ' + content.total_price.toFixed(2));
+          printer.text('ORDER TOTAL: $' + content.total_price.toFixed(2));
           printer.newLine();
 
           printer.style("NORMAL");
@@ -102,7 +102,7 @@ const formatProductLine = (product) => {
   const { name, price, qty } = product;
 
   const qtyName = `  ${qty} * ${name}`;
-  const total = (price * qty).toFixed(2);
+  const total = '$' + (price * qty).toFixed(2);
   const paddingSpace = maxLineWidth - qtyName.length - total.length - 2;
   const paddedPrice = ' '.repeat(paddingSpace) + total;
 

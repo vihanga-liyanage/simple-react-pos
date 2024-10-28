@@ -1,0 +1,32 @@
+.order-status-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.orders-section {
+  margin-bottom: 20px;
+}
+
+.orders-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.order-tile {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 150px; /* Adjust width as needed */
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: xxx-large;
+  color: white;
+}
+
+.order-tile.pending {
+  background-color: rgb(182, 101, 101);
+}
+
+.order-tile.ready {
+  background-color: green;
+}

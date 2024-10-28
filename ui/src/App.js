@@ -6,6 +6,7 @@ import Orders from './components/Orders';
 import OrderPlacement from './components/OrderPlacement';
 import Products from './components/Products';
 import SummaryPage from './components/Summary';
+import OrderStatusPage from './components/OrderStatus';
 import './App.css'; // Import CSS file
 
 function App() {
@@ -26,6 +27,9 @@ function App() {
             <li>
               <Link to="/summary">Summary</Link>
             </li>
+            <li>
+              <Link to="/status">Status</Link>
+            </li>
           </ul>
         </nav>
         <Switch>
@@ -33,6 +37,7 @@ function App() {
           <Route path="/orders" component={Orders} />
           <Route path="/products" component={Products} />
           <Route path="/summary" component={SummaryPage} />
+          <Route path="/status" component={OrderStatusPage} />
         </Switch>
       </div>
     </Router>

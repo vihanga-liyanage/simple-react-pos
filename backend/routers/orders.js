@@ -128,13 +128,25 @@ module.exports = (pool) => {
 
   });
 
+  router.get('/status', async (req, res) => {
+    try {
+      const [pendingOrders] = await pool.query('SELECT * FROM orders WHERE delivery_status = -1');
+      const [readyOrders] = await pool.query('SELECT * FROM orders WHERE delivery_status = 0');
+      
+      res.json({ pendingOrders, readyOrders });
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      res.status(500).json({ message: 'Error fetching orders' });
+    }
+  });
+
   // Route to get order by ID
   router.get('/:id', async (req, res) => {
     const { id } = req.params;
     const sql = 'SELECT * FROM orders WHERE id = ?';
 
     try {
-      const [results] = await pool.query(fetchOrderByIdQuery, [id]);
+      const [results] = await pool.query(sql, [id]);
   
       if (results.length === 0) {
         res.status(404).send('Order not found');
@@ -175,23 +187,23 @@ module.exports = (pool) => {
   });
 
   // Route to delete order by ID
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  const sql = 'DELETE FROM orders WHERE id = ?';
-  try {
-      const [result] = await pool.query(sql, [id]);
+  router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    const sql = 'DELETE FROM orders WHERE id = ?';
+    try {
+        const [result] = await pool.query(sql, [id]);
 
-      if (result.affectedRows === 0) {
-          res.status(404).send('Order not found');
-          return;
-      }
+        if (result.affectedRows === 0) {
+            res.status(404).send('Order not found');
+            return;
+        }
 
-      res.json({ message: 'Order deleted successfully' });
-  } catch (error) {
-      console.error('Error deleting order:', error);
-      res.status(500).send('Error deleting order');
-  }
-});
+        res.json({ message: 'Order deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        res.status(500).send('Error deleting order');
+    }
+  });
 
   // Route to update delivery status by ID
   router.put('/:id/delivery-status', async (req, res) => {

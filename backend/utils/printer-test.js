@@ -31,7 +31,7 @@ if (printer != null) {
           .text("Misafir")
           .size(0, 1)
           .text("Misafir")
-          .size(1, 1)
+          .size(0.5, 0.5)
           .text("Misafir")
           .size(1, 0)
           .text("Misafir")

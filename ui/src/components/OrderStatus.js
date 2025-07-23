@@ -35,6 +35,7 @@ const OrderStatus = () => {
           {pendingOrders.map((order) => (
             <div key={order.id} className="order-tile pending">
               <p>{order.id}</p>
+              {order.customer_name && <p className='customer-name'>{order.customer_name}</p>}
             </div>
           ))}
         </div>
@@ -45,6 +46,7 @@ const OrderStatus = () => {
           {readyOrders.map((order) => (
             <div key={order.id} className="order-tile ready">
               <p>{order.id}</p>
+              {order.customer_name && <p className='customer-name'>{order.customer_name}</p>}
             </div>
           ))}
         </div>

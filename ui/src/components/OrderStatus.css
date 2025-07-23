@@ -30,3 +30,7 @@
 .order-tile.ready {
   background-color: green;
 }
+
+.customer-name {
+  font-size: large;
+}

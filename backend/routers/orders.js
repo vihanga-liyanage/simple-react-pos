@@ -74,7 +74,7 @@ module.exports = (pool) => {
       });
     }
     const receipt = {
-      title: "Austin Buddhist Vihara\nFood Bazar 2024\n\n",
+      title: "Austin Buddhist Vihara\nFood Bazar 2025\n\n",
       orderNumber: id,
       customer_name: customer_name,
       total_price: total_price,

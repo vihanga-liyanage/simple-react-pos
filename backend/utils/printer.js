@@ -39,7 +39,11 @@ async function printReceipt(content) {
 
           printer.align("RT");
           printer.text('Order number: ' + content.orderNumber);
+          
           printer.size(0, 0);
+          if (content.customer_name)
+            printer.text(content.customer_name);
+
           printDoubleLine();
           printer.newLine();
 
@@ -82,6 +86,11 @@ async function printReceipt(content) {
           // Printing internal receipt
           printer.size(3, 3);
           printer.text(content.orderNumber);
+
+          printer.size(2, 2);
+          if (content.customer_name)
+            printer.text(content.customer_name);
+
           printer.size(0, 0);
           printer.newLine();
           printer.drawLine();
@@ -90,6 +99,8 @@ async function printReceipt(content) {
           content.productInfo.forEach((product) => {
             printer.text(product.qty + ' * ' + product.name);
           });
+          printer.newLine();
+          printer.newLine();
           printer.newLine();
           printer.newLine();
           printer.cut();

@@ -7,7 +7,8 @@ CREATE TABLE products (
     name VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     image_url VARCHAR(255),
-    available BOOLEAN DEFAULT TRUE
+    available BOOLEAN DEFAULT TRUE,
+    is_special BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE orders (

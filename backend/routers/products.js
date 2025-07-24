@@ -18,12 +18,12 @@ module.exports = (pool) => {
 
   // Add a product
   router.post('/', async (req, res) => {
-    const { name, price, imageUrl = null, available = true } = req.body;
+    const { name, price, imageUrl = null, available = true, isSpecial = false } = req.body;
 
-    const sql = 'INSERT INTO products (name, price, image_url, available) VALUES (?, ?, ?, ?)';
+    const sql = 'INSERT INTO products (name, price, image_url, available, isSpecial) VALUES (?, ?, ?, ?, ?)';
 
     try {
-      const [result] = await pool.query(sql, [name, price, imageUrl, available]); // Execute the query
+      const [result] = await pool.query(sql, [name, price, imageUrl, available, isSpecial]); // Execute the query
       res.status(201).json({ message: 'Product added successfully', productId: result.insertId }); // Return success message with the inserted ID
     } catch (err) {
       console.error('Error adding product:', err);
@@ -54,12 +54,12 @@ module.exports = (pool) => {
   // Update a product by ID
   router.put('/:id', async (req, res) => {
     const productId = req.params.id;
-    const { name, price, imageUrl = null, available = true } = req.body;
+    const { name, price, imageUrl = null, available = true, isSpecial = false } = req.body;
 
-    const sql = 'UPDATE products SET name = ?, price = ?, image_url = ?, available = ? WHERE id = ?';
+    const sql = 'UPDATE products SET name = ?, price = ?, image_url = ?, available = ?, isSpecial = ? WHERE id = ?';
 
     try {
-      const [result] = await pool.query(sql, [name, price, imageUrl, available, productId]); // Execute the update query
+      const [result] = await pool.query(sql, [name, price, imageUrl, available, isSpecial, productId]); // Execute the update query
 
       if (result.affectedRows === 0) {
         res.status(404).send('Product not found'); // If no product is updated, return 404

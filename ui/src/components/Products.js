@@ -106,6 +106,7 @@ function Products() {
             <th>Price</th>
             <th>Image</th>
             <th>Available</th>
+            <th>Special</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -116,6 +117,7 @@ function Products() {
               <td>${product.price}</td>
               <td>{product.image_url}</td>
               <td>{product.available ? 'Yes' : 'No'}</td>
+              <td>{product.isSpecial ? 'Yes' : 'No'}</td>
               <td className="actions">
                 <button onClick={() => handleEdit(product)}>Edit</button>
                 <button onClick={() => deleteProduct(product.id)}>Delete</button>

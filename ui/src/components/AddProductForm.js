@@ -6,6 +6,7 @@ const AddProductForm = ({ initialProduct, onSubmit, mode = 'add' }) => {
     price: '',
     imageUrl: '',
     available: true,
+    isSpecial: false
   });
 
   useEffect(() => {
@@ -30,6 +31,7 @@ const AddProductForm = ({ initialProduct, onSubmit, mode = 'add' }) => {
       price: '',
       imageUrl: '',
       available: true,
+      isSpecial: false
     });
   };
 
@@ -73,6 +75,16 @@ const AddProductForm = ({ initialProduct, onSubmit, mode = 'add' }) => {
           type="checkbox"
           name="available"
           checked={product.available}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="form-row"> {/* Label and checkbox on the same line */}
+        <label htmlFor="isSpecial">Special:</label>
+        <input
+          type="checkbox"
+          name="isSpecial"
+          checked={product.isSpecial}
           onChange={handleChange}
         />
       </div>

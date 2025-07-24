@@ -105,6 +105,31 @@ async function printReceipt(content) {
           printer.newLine();
           printer.cut();
 
+          // Printing secondary internal receipt
+          if (content.specialProductInfo.length > 0) {
+            printer.size(3, 3);
+            printer.align("CT");
+            printer.text(content.orderNumber);
+
+            printer.size(2, 2);
+            if (content.customer_name)
+              printer.text(content.customer_name);
+
+            printer.size(0, 0);
+            printer.newLine();
+            printer.drawLine();
+            printer.align("LT");
+            printer.size(1, 1);
+            content.specialProductInfo.forEach((product) => {
+              printer.text(product.qty + ' * ' + product.name);
+            });
+            printer.newLine();
+            printer.newLine();
+            printer.newLine();
+            printer.newLine();
+            printer.cut();
+          }
+
           printer.close();
         });
       });

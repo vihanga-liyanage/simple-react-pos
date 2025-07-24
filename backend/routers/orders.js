@@ -65,13 +65,24 @@ module.exports = (pool) => {
     const { id, customer_name, total_price, payment_method, timestamp, products } = content;
   
     const productInfo = []
+    const specialProductInfo = []
     for (const p of products) {
-      const product = await getProductById(p.id); // Retrieve the product name
-      productInfo.push({
-        name: product.name,
-        price: product.price,
-        qty: p.quantity
-      });
+      const product = await getProductById(p.id); // Retrieve the products
+      console.log(product);
+
+      if (product.isSpecial) {
+        specialProductInfo.push({
+          name: product.name,
+          price: product.price,
+          qty: p.quantity
+        });
+      } else {
+        productInfo.push({
+          name: product.name,
+          price: product.price,
+          qty: p.quantity
+        });
+      }
     }
     const receipt = {
       title: "Austin Buddhist Vihara\nFood Bazar 2025\n\n",
@@ -80,7 +91,8 @@ module.exports = (pool) => {
       total_price: total_price,
       payment_method: payment_method,
       timestamp: timestamp,
-      productInfo: productInfo
+      productInfo: productInfo,
+      specialProductInfo: specialProductInfo
     };
   
     return receipt;
@@ -92,7 +104,7 @@ module.exports = (pool) => {
       throw new Error('Invalid product ID');
     }
   
-    const query = `SELECT name, price FROM products WHERE id = ?`;
+    const query = `SELECT name, price, isSpecial FROM products WHERE id = ?`;
     
     try {
       const [rows] = await pool.query(query, [productId]); // Parameterized query

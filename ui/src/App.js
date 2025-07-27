@@ -8,6 +8,7 @@ import Products from './components/Products';
 import SummaryPage from './components/Summary';
 import OrderStatusPage from './components/OrderStatus';
 import './App.css'; // Import CSS file
+import MenuPage from './components/Menu';
 
 function App() {
   return (
@@ -30,6 +31,9 @@ function App() {
             <li>
               <Link to="/status">Status</Link>
             </li>
+            <li>
+              <Link to="/menu">Menu</Link>
+            </li>
           </ul>
         </nav>
         <Switch>
@@ -38,6 +42,7 @@ function App() {
           <Route path="/products" component={Products} />
           <Route path="/summary" component={SummaryPage} />
           <Route path="/status" component={OrderStatusPage} />
+          <Route path="/menu" component={MenuPage} />
         </Switch>
       </div>
     </Router>

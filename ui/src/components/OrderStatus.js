@@ -21,7 +21,7 @@ const OrderStatus = () => {
 
   useEffect(() => {
     fetchOrders(); // Initial fetch
-    const intervalId = setInterval(fetchOrders, 5000); // Fetch every 5 seconds
+    const intervalId = setInterval(fetchOrders, 3000); // Fetch every 3 seconds
 
     return () => clearInterval(intervalId); // Clean up the interval on component unmount
   }, []);
